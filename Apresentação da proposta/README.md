@@ -63,7 +63,7 @@ O planejamento e gerenciamento das atividades do projeto ocorrerá utilizando ve
 ## Cronograma
 
 |Prazos     | Atividades         
-| :------------- |:-------------:|
+| :------------- |:-------------|
 | 19/03/2018     |Estrutura do projeto em Jupyter Notebook |
 | 28/03/2018    |Estrutura do código e divisão das tarefas |  
 | 02/04/2018 |Entrega do Produto 1: Aplicativo capaz de fazer leitura dos dados em .bin e preparação para lançamento no modelo|
