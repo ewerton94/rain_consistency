@@ -3,14 +3,14 @@
 
 ## Justificativa
 
-A modelagem de processos hidrológicos é baseada na interdependência de diversas variáveis chave que compõe o ciclo hidrológico, dentre elas podemos citar a precipitação. Collischonn (2010) define a precipitação como toda a forma de água que atinge a superfície terrestre, como chuva, neblina, orvalho ou geada, sendo a chuva q formas mais comum de precipitação no território brasileiro.
+A modelagem de processos hidrológicos é baseada na independência de diversas variáveis chave que compõe o ciclo hidrológico, dentre elas podemos citar a precipitação. Collischonn (2010) define a precipitação como toda a forma de água que atinge a superfície terrestre, como chuva, neblina, orvalho ou geada, sendo a chuva a forma mais comum de precipitação no território brasileiro.
 
 
-O monitoramento desta variável permite a aplicação desses dados em modelos matemáticos que possibilitam estimar condições climáticas (modelos metereológicos) e vazões (modelos hidrológicos/hidráulicos) em dada região, tornando-se importante fonte de dados para estudos científico, além de auxiliar como ferramenta de gestão de riscos. 
-Atualmente diversos órgãos e entidades realizam o monitoramento de dados dessa variável, como Cemaden, Semarh, Ana e radares meteorológicos. Cada uma dessas entidade dão origem à dados de diferentes formatações, padrões e frequências. Contudo, os modelos hidrológicos recebem um formato padrão, e muitas vezes único, o que gera a necessidade de manipulação desses dados antes da sua utilização. Outros problemas enfrentados com esse tipo de dado é a existência de falhas e inconsistências, que devem ser analisadas e tratadas criteriosamente antes do uso dos mesmos, evitando, no processo de modelagem, resultados incoerentes com a realidade.
+O monitoramento desta variável permite a aplicação desses dados em modelos matemáticos que possibilitam estimar condições climáticas (modelos metereológicos) e vazões (modelos hidrológicos/hidráulicos) em dada região, tornando-se importante fonte de dados para estudos científicos, além de auxiliar como ferramenta de gestão de riscos. 
+Atualmente diversos órgãos e entidades realizam o monitoramento de dados dessa variável, como Cemaden, Semarh, ANA e radares meteorológicos. Cada uma dessas entidades dão origem à dados de diferentes formatações, padrões e frequências. Contudo, os modelos hidrológicos recebem um formato padrão, e muitas vezes único, o que gera a necessidade de manipulação desses dados antes da sua utilização. Outros problemas enfrentados com esse tipo de dado é a existência de falhas e inconsistências, que devem ser analisadas e tratadas criteriosamente antes do uso dos mesmos, evitando, no processo de modelagem, resultados incoerentes com a realidade.
 
 
-Partindo desse viés, o projeto proposto almeja a elaboração de uma aplicação que viabilize de forma prática a análise e tratamento de dados de precipitação oriundos de radar, sendo manipulados de forma a prepara-los como entrada em modelos hidrológicos.
+Partindo desse viés, o projeto proposto almeja a elaboração de uma aplicação que viabilize de forma prática a análise e tratamento de dados de precipitação oriundos de radar, sendo manipulados de forma a prepará-los como entrada em modelos hidrológicos.
 
 ## Objetivos
 
