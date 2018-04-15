@@ -1,0 +1,29 @@
+$ git config --global user.name  "nome do usuário" 
+
+Ajusta o nome de usuário para exibição
+
+$ git config --global user.email "email"
+
+Ajusta o email do usuário
+
+$ git clone 'url'
+
+Clonar repositório
+
+$ git add -A 
+Adiciona/atualiza todos os arquivos no git do pc no repositório
+
+$ git add 'nome do arquivo'
+Atualiza/adiciona arquivo específico
+
+$ git commit -m "msg"
+Comenta as atualizações dos arquivos a partir do git add
+
+$ git push origin "branch" (master)
+upa arquivos
+
+$ git pull
+baixa atualizações de arquivos
+
+$ git update-index --assume-unchanged 'bancozinho/settings.py'
+impede o push de arquivos
