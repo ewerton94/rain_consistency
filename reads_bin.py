@@ -167,6 +167,7 @@ if __name__=='__main__':
     loc = (-36.689, -9.2897)
     print(data_from_radar.keys())
     series = get_series_from_location(loc, spatial_grid, list_of_matrix, dates)
+    
     print(series)
 
 
