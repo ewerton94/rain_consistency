@@ -38,8 +38,10 @@ def get_date(filename):
 def get_matrix_from_bin(zip_file, filename, nlin, ncol):
     #print(filename)
     file = zip_file.read(filename)
-    #   print(file)
-    return np.fromstring(file, dtype=np.float32).reshape(nlin, ncol)
+    try:
+        return np.fromstring(file, dtype='float32').reshape(nlin, ncol)
+    except:
+        raise Exception(filename)
 
 def get_info(zip_file, filenames):
     for filename in filenames:
@@ -155,11 +157,15 @@ def get_series_from_location(loc, spatial_grid, list_of_matrix, dates):
 if __name__=='__main__':
     base_dir = os.getcwd()
     files_dir = os.path.join(base_dir, 'files')
-    filename = get_files_from_extension(files_dir, 'zip')[0]
-    list_of_matrix, dates, location_info = input_bin(files_dir, filename)
-    lat, reslat, lon, reslon = location_info[0][0], location_info[0][1], location_info[1][0], location_info[1][1]
-    spatial_grid = get_spatial_grid(list_of_matrix, lat, reslat, lon, reslon, dates)
+    data_from_radar = {}
+    for filename in get_files_from_extension(files_dir, 'zip'):
+        list_of_matrix, dates, location_info = input_bin(files_dir, filename)
+        lat, reslat, lon, reslon = location_info[0][0], location_info[0][1], location_info[1][0], location_info[1][1]
+        spatial_grid = get_spatial_grid(list_of_matrix, lat, reslat, lon, reslon, dates)
+        data_from_radar[filename.split('.')[0]] = {'data': list_of_matrix, 'dates': dates}
+        print(filename) 
     loc = (-36.689, -9.2897)
+    print(data_from_radar.keys())
     series = get_series_from_location(loc, spatial_grid, list_of_matrix, dates)
     print(series)
 
