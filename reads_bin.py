@@ -32,7 +32,7 @@ def get_date(filename):
         day = int(filename[6:8])
         hour = int(filename[9:11])
         minutes = int(filename[11:13])
-        return datetime(year, month, day, hour, minutes, tzinfo=AmericaMaceio())
+        return datetime(year, month, day, hour, minutes)
     return None
 
 def get_matrix_from_bin(zip_file, filename, nlin, ncol):
@@ -152,23 +152,28 @@ def find_lat(lat, spatial_grid):
 def get_series_from_location(loc, spatial_grid, list_of_matrix, dates):
     i, lon = find_lon(loc[0], spatial_grid)
     j, lat = find_lat(loc[1], spatial_grid)
-    return pd.Series([e[j][i] for e in list_of_matrix], index=dates)
+    return pd.Series([e[j][i] for e in list_of_matrix], index=dates, name=str(loc))
 
 if __name__=='__main__':
     base_dir = os.getcwd()
     files_dir = os.path.join(base_dir, 'files')
     data_from_radar = {}
+    with open('entrada.txt', 'r') as input_file:
+        postos = [(float(line.replace(',','.').split()[0]), float(line.replace(',','.').split()[1])) for line in input_file.readlines()]
     for filename in get_files_from_extension(files_dir, 'zip'):
         list_of_matrix, dates, location_info = input_bin(files_dir, filename)
         lat, reslat, lon, reslon = location_info[0][0], location_info[0][1], location_info[1][0], location_info[1][1]
         spatial_grid = get_spatial_grid(list_of_matrix, lat, reslat, lon, reslon, dates)
-        data_from_radar[filename.split('.')[0]] = {'data': list_of_matrix, 'dates': dates}
-        print(filename) 
-    loc = (-36.689, -9.2897)
-    print(data_from_radar.keys())
-    series = get_series_from_location(loc, spatial_grid, list_of_matrix, dates)
-    
-    print(series)
+        print(filename)
+        df = pd.DataFrame({})
+        for posto in postos:
+            series = get_series_from_location(posto, spatial_grid, list_of_matrix, dates)
+            df[posto] = series
+        #df = pd.concat(data_series)
+        df.to_excel(filename.split('.')[0]+'.xlsx')
+        list_of_matrix, dates, location_info, spatial_grid = None, None, None, None
+
+    #print(series)
 
 
     #temporal = [[matrix[i][j]for i in range(len())] for matrix in list_of_matrix]
