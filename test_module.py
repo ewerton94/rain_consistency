@@ -2,7 +2,7 @@ import pandas as pd
 
 
 def merge_datas_df(station_data,radar_data):
-'''
+    '''
     Essa função une os dicionários que contém os dados de chuva dos postos pluviométricos oriundos do radar aos observados nas
     estações em uma única estrutura de dados. Isso facilitará as etapas posteriores de comparações dos dados.
 
@@ -10,32 +10,32 @@ def merge_datas_df(station_data,radar_data):
                         Keys = Códigos dos Postos:
                         Values = Pandas.DataFrame( Colunas = [S-Dates(dados observados), Modelo1 , Modelo2,...]
                      }
-'''
+    '''
     merge_data = {}
-    for station in station.keys():
-        merge_data[station]= pd.concat([radar_data[station],station_data[station]],axis = 1).drop('S-Dates', axis = 1)
+    for station in station_data.keys():
+        merge_data[station]= pd.concat([radar_data[station],station_data[station]],axis = 1)
     return merge_data
 
 
 def test(radar,station):
-'''
+    '''
     Função auxiliar que realiza o teste de detecção dos dados pelo radar.
     A nomeclatura adotada é a seguinte:
     a - correto positivo : quando o radar e o pluviômetro registram a ocorrência de chuva na bacia igual ou maior do que o limiar determinado;
     b - falso alarme: quando o radar registra a ocorrência de chuva na bacia igual ou maior do que o limiar determinado, em discordância com o pluviômetro;
     c - falha: quando o radar não registra a ocorrência de chuva na bacia igual ou maior do que o limiar determinado, em discordância com o pluviômetro;
     d - correto negativo: quando o radar e o pluviômetro não registram a ocorrência de chuva na bacia igual ou maior do que o limiar determinado.
-'''
+    '''
     if radar==0:
         if station==0:
             test = 'd'
         else:
             test = 'c'
+    else:
+        if station==0:
+            test = 'b'
         else:
-            if station==0:
-                test = 'b'
-            else:
-                test = 'a'
+            test = 'a'
     return test
 
 
@@ -43,12 +43,12 @@ def value_test(detect_data_station):
     results = ['a','b','c','d']
     values = []
     for i in results:
-        values.append(detect_data_station.loc[detect_data__station["DetectionTest"]==i].shape[0])
-return values
+        values.append(detect_data_station.loc[detect_data_station["DetectionTest"]==i].shape[0])
+    return values
 
 
 def occur_tests_values(a,b,c,d):
-'''
+    '''
     Função auxiliar que realiza o cálculo das métricas de ocorrência de chuva, onde:
 
     pod: Probabilidade de detecção (POD) representa a fração de dados observados que foram
@@ -67,7 +67,7 @@ def occur_tests_values(a,b,c,d):
     ar: Razão de acurácia(AR) mede a fração de eventos estimados corretamente,
     independentemente se foram corretos positivos (a) ou negativos (d), com relação ao
     total de eventos (n).
-'''
+    '''
     n = a + b + c + d
     pod = a/(a+c)
     far = b/(a+b)
@@ -77,7 +77,7 @@ def occur_tests_values(a,b,c,d):
     return [pod, far, biasf, ets, ar]
 
 def detect_anal(merge_data):
-'''
+    '''
     Essa é a função principal para a realização do teste de detecção de chuva.
     Recebe como entrada a estrutura de dados contendo os dados observados e de radar de cada
     posto obtida a partir da função merge_datas_df e retorna uma estrutura similar a de
@@ -89,13 +89,12 @@ def detect_anal(merge_data):
                                                Colunas = [ Modelo1 , Modelo2,...],
                                                Linhas = (resultado do teste de detecção, e.g 'a','b','c','d'
                         }
-'''
-    
+    '''
     detect_data = {}
-    for station for merge_data.keys():
+    for station in merge_data.keys():
         station_data = merge_data[station]
         models = station_data.keys().drop('S-Datas')
-        datas_test  = pd.Dataframe({})
+        datas_test  = pd.DataFrame({})
         for model in models:
             tests = []
             for i in station_data.index:
@@ -110,7 +109,7 @@ def detect_anal(merge_data):
 
 
 def ocurr_test(detect_data):
-'''
+    '''
     Essa é a função principal para os cálculos das métricas de ocorrência de chuva.
     Recebe os dados obtidos a partir do teste de detecção(def detect_anal()) e retorna estrutura
     de dados similar contendo o resultado da comparação de cada modelo.
@@ -121,11 +120,11 @@ def ocurr_test(detect_data):
                                                     Colunas = [ Modelo1 , Modelo2,...],
                                                     Linhas = ['POD','FAR','BIASF','ETS','AR'](resultado para cada uma das métricas}
                         }    
-'''
+    '''
     occur_results = {}
-    for station for detect_data.keys():
+    for station in detect_data.keys():
         station_data = detect_data[station]
-        df = pd.Dataframe({})
+        df = pd.DataFrame({})
         for model in station_data.columns:
             detec_values = value_test(station_data[model])
             tests = occur_tests_values(detec_values[0],detec_values[1],detec_values[2],detec_values[3])
