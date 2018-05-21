@@ -62,7 +62,7 @@ def input_pluvio_data(stations_metadata_filename=None, stations_data_dir=None):
 
 
 if __name__ == '__main__':
-    datas = input_pluvio_data(stations_metadata_filename='entrada.txt', stations_data_dir='txt/Evento 1/')
+    
     print(datas)
 
     
