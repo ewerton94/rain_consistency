@@ -21,6 +21,9 @@ if __name__=="__main__":
     data_from_radar = get_data_from_radar(postos)
     for model in data_from_radar:
         data = merge_datas_df(data_from_radar[model], data_from_pluviometric_station)
+        print(model)
+        print(list(data.values())[0].head())
+        #print(list(data.values()[0]))
 
 
     #data_from_stations = []
