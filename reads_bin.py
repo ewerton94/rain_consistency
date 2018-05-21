@@ -138,43 +138,40 @@ def input_bin(files_dir, filename):
     return list_of_matrix
 
 def find_lon(lon, spatial_grid):
-    if lon<spatial_grid[0][0][0] or lon>spatial_grid[0][-1][0]+(spatial_grid[0][-1][0]-spatial_grid[0][-2][0]):
-        raise Exception("Longitude fora da malha")
+    if lon<spatial_grid[0][0][0]:
+        return 0, spatial_grid[0][0][0]
+    if lon>spatial_grid[0][-1][0]+(spatial_grid[0][-1][0]-spatial_grid[0][-2][0]):
+        return -1, spatial_grid[0][-1][0]
     for i, coordinate in enumerate(spatial_grid[0]):
         if lon<coordinate[0]:
             return i-1, spatial_grid[0][i-1][0]
 def find_lat(lat, spatial_grid):
-    if lat<spatial_grid[0][0][1] or lat>spatial_grid[-1][0][1]+(spatial_grid[-1][0][1]-spatial_grid[-2][0][1]):
-        raise Exception("Latitude fora da malha")
+    if lat<spatial_grid[0][0][1]:
+        return 0, spatial_grid[0][0][1]
+    if lat>spatial_grid[-1][0][1]+(spatial_grid[-1][0][1]-spatial_grid[-2][0][1]):
+        return -1, spatial_grid[-1][0][1]
     for i, coordinate in enumerate([spatial_grid[i][0] for i in range(len(spatial_grid))]):
         if lat<coordinate[1]:
             return i-1, spatial_grid[i-1][0][1]
-def get_series_from_location(loc, spatial_grid, list_of_matrix, dates):
+def get_series_from_location(station, loc, spatial_grid, list_of_matrix, dates):
     i, lon = find_lon(loc[0], spatial_grid)
     j, lat = find_lat(loc[1], spatial_grid)
-    return pd.Series([e[j][i] for e in list_of_matrix], index=dates, name=str(loc))
+    return pd.Series([e[j][i] if e[j][i] !=-9999 else 0 for e in list_of_matrix], index=dates, name=station)
 
-if __name__=='__main__':
+def get_data_from_radar(stations):
     base_dir = os.getcwd()
     files_dir = os.path.join(base_dir, 'files')
     data_from_radar = {}
-    with open('entrada.txt', 'r') as input_file:
-        postos = [(float(line.replace(',','.').split()[0]), float(line.replace(',','.').split()[1])) for line in input_file.readlines()]
     for filename in get_files_from_extension(files_dir, 'zip'):
+        model = filename.split('.')[0]
         list_of_matrix, dates, location_info = input_bin(files_dir, filename)
         lat, reslat, lon, reslon = location_info[0][0], location_info[0][1], location_info[1][0], location_info[1][1]
         spatial_grid = get_spatial_grid(list_of_matrix, lat, reslat, lon, reslon, dates)
-        print(filename)
-        df = pd.DataFrame({})
-        for posto in postos:
-            series = get_series_from_location(posto, spatial_grid, list_of_matrix, dates)
-            df[posto] = series
-        #df = pd.concat(data_series)
-        df.to_excel(filename.split('.')[0]+'.xlsx')
+        data_from_radar[model] = {}
+        for station, coordinates in stations.items():
+            data_from_radar[model].setdefault(int(station), []).append(get_series_from_location(station, coordinates, spatial_grid, list_of_matrix, dates))
         list_of_matrix, dates, location_info, spatial_grid = None, None, None, None
-
-    #print(series)
-
-
-    #temporal = [[matrix[i][j]for i in range(len())] for matrix in list_of_matrix]
-    #print([t if t!=-9999 else 0 for t in temporal])
+    for model in data_from_radar:
+        for station in data_from_radar[model]:
+            data_from_radar[model][station] = pd.concat(data_from_radar[model][station], axis=1).groupby(pd.Grouper(freq='H')).sum()   
+    return data_from_radar
