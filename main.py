@@ -26,10 +26,16 @@ if __name__=="__main__":
         data_from_pluviometric_station[station].index = data_from_pluviometric_station[station].index.to_datetime()
     data_from_radar = get_data_from_radar(stations)
     events = get_events_dates('events.txt')
+
     for event in events:
-        data = merge_datas_df(data_from_pluviometric_station, data_from_radar, event)
-        print(data)
+        event_data = merge_datas_df(data_from_pluviometric_station, data_from_radar, event)
+        print(event_data)
         #print(list(data.values()[0]))
+
+    events_data = {}
+    for station in stations:
+        events_data[station] = merge_datas_df_event(data_from_pluviometric_station[station], data_from_radar[station], event)
+        print(events_data.head())
 
     '''
     #data_from_stations = []

@@ -15,7 +15,6 @@ def merge_datas_df(station_data, radar_data, event):
                      }
     '''
     merge_data = {}
-    before = 0
     for station in station_data.keys():
         print(radar_data[station].head())
         #index = radar_data[station].index
@@ -27,6 +26,27 @@ def merge_datas_df(station_data, radar_data, event):
         print(merge_data[station])
     return merge_data
 
+def merge_datas_df_event(station_data, radar_data, events):
+    '''
+    Essa função une os dicionários que contém os dados de chuva dos postos pluviométricos oriundos do radar aos observados nas
+    estações em uma única estrutura de dados. Isso facilitará as etapas posteriores de comparações dos dados.
+
+    merge_data = Dict{
+                        Keys = Códigos dos Postos:
+                        Values = Pandas.DataFrame( Colunas = [S-Dates(dados observados), Modelo1 , Modelo2,...]
+                     }
+    '''
+    merge_events_data = {}
+    i=1
+    event_name = 'Event {}'.format(i)
+    for event in events:
+        rd = radar_data.loc[event[0]: event[1]]
+        sd = station_data.loc[event[0]: event[1]]
+        merge_events_data[event_name]= pd.concat([rd, sd],axis = 1)
+
+
+        print(merge_events_data[event_name].head())
+    return merge_events_data[event_name]
 
 def test(radar,station):
     '''
