@@ -6,11 +6,14 @@ import os
 
 def get_station_info_from_txt(filename):
     with open(filename, 'r') as input_file:
-        return {float(line.replace(',','.').split()[0]):(float(line.replace(',','.').split()[1]), float(line.replace(',','.').split()[2])) for line in input_file.readlines()}
+        return {line.split()[0]:(float(line.replace(',','.').split()[1]), float(line.replace(',','.').split()[2])) for line in input_file.readlines()}
 
 def get_station_data_from_txt(filename):
     return None
 
+def get_events_dates(filename):
+    with open(filename, 'r') as input_file:
+        return [(datetime.strptime(line.split()[0], "%d/%m/%Y"), datetime.strptime(line.split()[1]+" 23:59", "%d/%m/%Y %H:%M")) for line in input_file.readlines()]
 
 def get_files_from_extension(base_dir, extension):
         return [file for file in os.listdir(base_dir) if file.endswith(extension)]
@@ -64,8 +67,8 @@ def input_pluvio_data(stations_metadata_filename=None, stations_data_dir=None):
 
 
 if __name__ == '__main__':
-    
-    print(datas)
+    pass
+    #print(datas)
 
     
 

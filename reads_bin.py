@@ -4,10 +4,10 @@ import os
 from zipfile import ZipFile
 from shutil import move
 import pandas as pd
-from plotly.offline import plot, iplot, init_notebook_mode
-import cufflinks as cf
-init_notebook_mode(connected=True)
-cf.go_offline()
+#from plotly.offline import plot, iplot, init_notebook_mode
+#import cufflinks as cf
+#init_notebook_mode(connected=True)
+#cf.go_offline()
 #from django.contrib.gis.geos import Point
 #from django.contrib.gis.gdal import GDALRaster
 #from data.models import Series, Elevation, TemporalSeries
@@ -157,10 +157,10 @@ def find_lat(lat, spatial_grid):
     for i, coordinate in enumerate([spatial_grid[i][0] for i in range(len(spatial_grid))]):
         if lat<coordinate[1]:
             return i-1, spatial_grid[i-1][0][1]
-def get_series_from_location(station, loc, spatial_grid, list_of_matrix, dates):
+def get_series_from_location(station, loc, spatial_grid, list_of_matrix, dates, name):
     i, lon = find_lon(loc[0], spatial_grid)
     j, lat = find_lat(loc[1], spatial_grid)
-    return pd.Series([e[j][i] if e[j][i] !=-9999 else 0 for e in list_of_matrix], index=dates, name=station)
+    return pd.Series([e[j][i] if e[j][i] !=-9999 else 0 for e in list_of_matrix], index=dates, name=name)
 
 def get_data_from_radar(stations):
     base_dir = os.getcwd()
@@ -171,15 +171,14 @@ def get_data_from_radar(stations):
         list_of_matrix, dates, location_info = input_bin(files_dir, filename)
         lat, reslat, lon, reslon = location_info[0][0], location_info[0][1], location_info[1][0], location_info[1][1]
         spatial_grid = get_spatial_grid(list_of_matrix, lat, reslat, lon, reslon, dates)
-        data_from_radar[model] = {}
         for station, coordinates in stations.items():
-            data_from_radar[model].setdefault(int(station), []).append(get_series_from_location(station, coordinates, spatial_grid, list_of_matrix, dates))
-        print(len(list(data_from_radar[model].values())[0][0]))
-        a = list(data_from_radar[model].values())[0][0]
-        fig = a.iplot(asFigure=True)
-        plot(fig, filename=model+".html")
+            data_from_radar.setdefault(station, []).append(get_series_from_location(station, coordinates, spatial_grid, list_of_matrix, dates, model))
+        #a = list(data_from_radar[model].values())[0][0]
+        #fig = a.iplot(asFigure=True)
+        #plot(fig, filename=model+".html")
         list_of_matrix, dates, location_info, spatial_grid = None, None, None, None
-    for model in data_from_radar:
-        for station in data_from_radar[model]:
-            data_from_radar[model][station] = pd.concat(data_from_radar[model][station], axis=1).groupby(pd.Grouper(freq='H')).sum()   
+    for station in data_from_radar:
+        #for station in data_from_radar[model]:
+        data_from_radar[station] = pd.concat(data_from_radar[station], axis=1).groupby(pd.Grouper(freq='H')).sum()
+        #print(data_from_radar[station])
     return data_from_radar

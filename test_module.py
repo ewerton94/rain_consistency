@@ -1,7 +1,10 @@
 import pandas as pd
 
+def get_data_from_specific_period():
+    pass
 
-def merge_datas_df(station_data, radar_data):
+
+def merge_datas_df(station_data, radar_data, event):
     '''
     Essa função une os dicionários que contém os dados de chuva dos postos pluviométricos oriundos do radar aos observados nas
     estações em uma única estrutura de dados. Isso facilitará as etapas posteriores de comparações dos dados.
@@ -14,16 +17,14 @@ def merge_datas_df(station_data, radar_data):
     merge_data = {}
     before = 0
     for station in station_data.keys():
-        index = list(radar_data[station].index)
-        index = index[before: before + len(station_data[station])]
-        #print(len(index))
-        #print(len(station_data[station]))
-        station_data[station].index = index
+        print(radar_data[station].head())
+        #index = radar_data[station].index
+        #index = [pd.Timestamp(date, freq="H") for date in index if event[0] <= date <=event[1]]
         #print(index)
-        
-        #before = len(station_data[station])
-        #print(station_data[station].head())
-        merge_data[station]= pd.concat([radar_data[station], station_data[station]],axis = 1)
+        rd = radar_data[station].loc[event[0]: event[1]]
+        sd = station_data[station].loc[event[0]: event[1]]
+        merge_data[station]= pd.concat([rd, sd],axis = 1)
+        print(merge_data[station])
     return merge_data
 
 
