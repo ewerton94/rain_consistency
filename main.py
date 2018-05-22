@@ -20,7 +20,7 @@ if __name__=="__main__":
     postos = get_station_info_from_txt(stations_metadata_filename)
     data_from_radar = get_data_from_radar(postos)
     for model in data_from_radar:
-        data = merge_datas_df(data_from_radar[model], data_from_pluviometric_station)
+        data = merge_datas_df(data_from_pluviometric_station, data_from_radar[model])
         print(model)
         print(list(data.values())[0].head())
         #print(list(data.values()[0]))

@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-def merge_datas_df(station_data,radar_data):
+def merge_datas_df(station_data, radar_data):
     '''
     Essa função une os dicionários que contém os dados de chuva dos postos pluviométricos oriundos do radar aos observados nas
     estações em uma única estrutura de dados. Isso facilitará as etapas posteriores de comparações dos dados.
@@ -12,8 +12,18 @@ def merge_datas_df(station_data,radar_data):
                      }
     '''
     merge_data = {}
+    before = 0
     for station in station_data.keys():
-        merge_data[station]= pd.concat([radar_data[station],station_data[station]],axis = 1)
+        index = list(radar_data[station].index)
+        index = index[before: before + len(station_data[station])]
+        #print(len(index))
+        #print(len(station_data[station]))
+        station_data[station].index = index
+        #print(index)
+        
+        #before = len(station_data[station])
+        #print(station_data[station].head())
+        merge_data[station]= pd.concat([radar_data[station], station_data[station]],axis = 1)
     return merge_data
 
 
