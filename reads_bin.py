@@ -4,6 +4,10 @@ import os
 from zipfile import ZipFile
 from shutil import move
 import pandas as pd
+from plotly.offline import plot, iplot, init_notebook_mode
+import cufflinks as cf
+init_notebook_mode(connected=True)
+cf.go_offline()
 #from django.contrib.gis.geos import Point
 #from django.contrib.gis.gdal import GDALRaster
 #from data.models import Series, Elevation, TemporalSeries
@@ -170,6 +174,10 @@ def get_data_from_radar(stations):
         data_from_radar[model] = {}
         for station, coordinates in stations.items():
             data_from_radar[model].setdefault(int(station), []).append(get_series_from_location(station, coordinates, spatial_grid, list_of_matrix, dates))
+        print(len(list(data_from_radar[model].values())[0][0]))
+        a = list(data_from_radar[model].values())[0][0]
+        fig = a.iplot(asFigure=True)
+        plot(fig, filename=model+".html")
         list_of_matrix, dates, location_info, spatial_grid = None, None, None, None
     for model in data_from_radar:
         for station in data_from_radar[model]:

@@ -54,9 +54,11 @@ def input_pluvio_data(stations_metadata_filename=None, stations_data_dir=None):
     stations_data = {}
     for filename in get_files_from_extension(stations_data_dir, '.txt'):
         name = filename.split('.txt')[0]
+        name = int(''.join([s for s in name if s.isdigit()]))
         for station in stations_list:
+            station = int(''.join([s for s in station if s.isdigit()]))
             if name == station:
-                file_path = os.path.join(stations_data_dir,filename)
+                file_path = os.path.join(stations_data_dir,filename) 
                 stations_data[name] = get_data_from_txt_mgb(file_path).groupby(pd.Grouper(freq='D')).sum()
     return stations_data
 
