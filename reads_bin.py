@@ -166,8 +166,10 @@ def get_data_from_radar(stations):
     base_dir = os.getcwd()
     files_dir = os.path.join(base_dir, 'files')
     data_from_radar = {}
+    models = []
     for filename in get_files_from_extension(files_dir, 'zip'):
         model = filename.split('.')[0]
+        models.append(model)
         list_of_matrix, dates, location_info = input_bin(files_dir, filename)
         lat, reslat, lon, reslon = location_info[0][0], location_info[0][1], location_info[1][0], location_info[1][1]
         spatial_grid = get_spatial_grid(list_of_matrix, lat, reslat, lon, reslon, dates)
@@ -181,4 +183,4 @@ def get_data_from_radar(stations):
         #for station in data_from_radar[model]:
         data_from_radar[station] = pd.concat(data_from_radar[station], axis=1).groupby(pd.Grouper(freq='H')).sum()
         #print(data_from_radar[station])
-    return data_from_radar
+    return data_from_radar, models
