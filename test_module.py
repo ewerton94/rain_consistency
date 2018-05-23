@@ -38,15 +38,16 @@ def merge_datas_df_event(station_data, radar_data, events):
     '''
     merge_events_data = {}
     i=1
-    event_name = 'Event {}'.format(i)
+    
     for event in events:
+        event_name = 'Event {}'.format(i)
         rd = radar_data.loc[event[0]: event[1]]
         sd = station_data.loc[event[0]: event[1]]
         merge_events_data[event_name]= pd.concat([rd, sd],axis = 1)
-
+        i += 1
 
         print(merge_events_data[event_name].head())
-    return merge_events_data[event_name]
+    return merge_events_data
 
 def test(radar,station):
     '''
@@ -70,12 +71,6 @@ def test(radar,station):
     return test
 
 
-def value_test(detect_data_station):
-    results = ['a','b','c','d']
-    values = []
-    for i in results:
-        values.append(detect_data_station.loc[detect_data_station["DetectionTest"]==i].shape[0])
-    return values
 
 
 def occur_tests_values(a,b,c,d):
@@ -105,9 +100,9 @@ def occur_tests_values(a,b,c,d):
     biasf = (a+b)/(a+c)
     ets = (a-(a + c)*(a + b)/n)/(a-(a+c)*(a+b)/n+b+c)
     ar = (a+d)/n
-    return [pod, far, biasf, ets, ar]
+    return {'pod': pod, 'far': far, 'biasf': biasf, 'ets': ets, 'ar': ar}
 
-def detect_anal(merge_data):
+def detect_anal(merge_data, models):
     '''
     Essa é a função principal para a realização do teste de detecção de chuva.
     Recebe como entrada a estrutura de dados contendo os dados observados e de radar de cada
@@ -123,44 +118,22 @@ def detect_anal(merge_data):
     '''
     detect_data = {}
     for station in merge_data.keys():
-        station_data = merge_data[station]
-        models = station_data.keys().drop('S-Datas')
-        datas_test  = pd.DataFrame({})
-        for model in models:
-            tests = []
-            for i in station_data.index:
-                radar = station_data[model][i]
-                station = station_data['S-Data'][i]
-                tests.append(test(radar,station))
-            tests = pd.Series(tests,name="DetectionTest")
-            datas_test[model] = pd.DataFrame(test,index = station_data.index)
-        detect_data[station] = datas_test
+        e = {}
+        for event in merge_data[station].keys():
+            print(event)
+            print(merge_data[station][event])
+            c = merge_data[station][event]
+            radar = c.drop(['Data',], axis=1)
+            station_ = merge_data[station][event]['Data']
+            a = {}
+            for model in models:
+                tests = []
+                for value in radar.index:
+                    tests.append(test(radar[model][value],station_[value]))
+                b = pd.Series(tests, index=radar.index, name=model)
+                b = b.groupby(lambda x: b[x]).count()
+                b = {key: b[key] for key in ['a','b','c','d']}
+                a[model] = occur_tests_values(**b)
+            e[event] = a
+        detect_data[station] = e
     return detect_data
-
-
-
-def ocurr_test(detect_data):
-    '''
-    Essa é a função principal para os cálculos das métricas de ocorrência de chuva.
-    Recebe os dados obtidos a partir do teste de detecção(def detect_anal()) e retorna estrutura
-    de dados similar contendo o resultado da comparação de cada modelo.
-
-    occur_results = Dict{
-                            Keys = Códigos dos Postos:
-                            Values = Pandas.DataFrame(
-                                                    Colunas = [ Modelo1 , Modelo2,...],
-                                                    Linhas = ['POD','FAR','BIASF','ETS','AR'](resultado para cada uma das métricas}
-                        }    
-    '''
-    occur_results = {}
-    for station in detect_data.keys():
-        station_data = detect_data[station]
-        df = pd.DataFrame({})
-        for model in station_data.columns:
-            detec_values = value_test(station_data[model])
-            tests = occur_tests_values(detec_values[0],detec_values[1],detec_values[2],detec_values[3])
-            df[model] = tests
-        df.index = ['POD','FAR','BIASF','ETS','AR']
-        occur_results[station] = df
-    return occur_results
-
