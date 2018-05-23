@@ -1,22 +1,23 @@
 import pandas as pd
 from random import choice
-
-def max_intense(data):
-    return
+METRICS = {'max': max, 'acum': sum}
 
 def resample(data, n):
     samples = []
     for i in range(n):
         samples.append([choice(data) for i in range(len(data))])
+    return samples
 
 def confidence_interval(data):
     df = pd.Series(data)
-    return df.quantile(.025), df.quantile(.975)
+    return {'mean': df.mean(), 'inf': df.quantile(.025), 'sup': df.quantile(.975)}
 
+def uncertainty_analysis(estimated, metric):
+    samples = resample(estimated, 100)
+    print(samples[:8])
+    result = []
+    for sample in samples:
+        result.append(METRICS[metric](sample))
+    return confidence_interval(result)
 
-
-def uncertainty_analysis(df_all_data, func):
-
-    for station in df_all_data.keys():
-    df_all_data.apply(resample, axis = 0)
 
