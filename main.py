@@ -7,7 +7,6 @@ from metrics import metrics
 from uncertainty_analysis import mae, rmse, corr_coef
 from bootstrap import uncertainty_analysis
 
-
 if __name__=="__main__":
     # Dados de entrada:
     stations_metadata_filename = 'entrada.txt'
@@ -28,24 +27,28 @@ if __name__=="__main__":
     events_data = {}
     for station in stations:
         events_data[station] = merge_datas_df_event(data_from_pluviometric_station[station], data_from_radar[station], events)
+    
     # Análise de ocorrência:
-    detect_anal(events_data, models)
+    detection = detect_anal(events_data, models)
+    # POD
+    print(detection[detection['stats']=='pod'].groupby('event').max())
+    #Análise de incertezas:
+    METRIC_DESCRIPTION = {'acum': 'Precipitação acumulada no evento', 'max': 'Intensidade máxima no evento (mm/h)'}
     #Análise de incertezas:
     metric_data = metrics(events_data)
     for station in metric_data:
-        for metric in ['acum', 'max']:
+        print('\n',40*'-', 'Resultados para a estação %s:'%station,40*'-', sep='\n')
+        for metric in ['acum',]:
+            print('\nAnálise da métrica: %s: '%METRIC_DESCRIPTION[metric])
             real = [d['Data'] for d in metric_data[station][metric]]
             models_metric = {}
             for model in models:
                 models_metric[model] = [d[model] for d in metric_data[station][metric]]
                 print('\n\nMODEL: ', model)
-                print(models_metric[model])
-                print(real)
-                print(metric)
-                print(uncertainty_analysis(models_metric[model], metric))
-                print(corr_coef(real, models_metric[model]))
-                print(mae(real, models_metric[model]))
-                print(rmse(real, models_metric[model]))
+                print('Coeficiente de correlação:',corr_coef(real, models_metric[model]))
+                print('Tendenciosidade:', mae(real, models_metric[model]))
+                ci = uncertainty_analysis(models_metric[model], metric)
+                print('Valor estimado da métrica pelo modelo: valor entre', ci['inf'],'e', ci['sup'])
     
 
 

@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 def get_data_from_specific_period():
     pass
@@ -43,10 +44,10 @@ def merge_datas_df_event(station_data, radar_data, events):
         event_name = 'Event {}'.format(i)
         rd = radar_data.loc[event[0]: event[1]]
         sd = station_data.loc[event[0]: event[1]]
-        merge_events_data[event_name]= pd.concat([rd, sd],axis = 1)
+        merge_events_data[event_name]= pd.concat([rd, sd],axis = 1).dropna()
         i += 1
 
-        print(merge_events_data[event_name].head())
+        #print(merge_events_data[event_name].head())
     return merge_events_data
 
 def test(radar,station):
@@ -94,12 +95,28 @@ def occur_tests_values(a,b,c,d):
     independentemente se foram corretos positivos (a) ou negativos (d), com relação ao
     total de eventos (n).
     '''
+    
     n = a + b + c + d
-    pod = a/(a+c)
-    far = b/(a+b)
-    biasf = (a+b)/(a+c)
-    ets = (a-(a + c)*(a + b)/n)/(a-(a+c)*(a+b)/n+b+c)
-    ar = (a+d)/n
+    try:
+        pod = a/(a+c)
+    except:
+        pod = np.nan
+    try:
+        far = b/(a+b)
+    except:
+        far = np.nan
+    try:
+        biasf = (a+b)/(a+c)
+    except:
+        biasf = np.nan
+    try:
+        ets = (a-(a + c)*(a + b)/n)/(a-(a+c)*(a+b)/n+b+c)
+    except:
+        ets = np.nan
+    try:
+        ar = (a+d)/n
+    except:
+        ar = np.nan        
     return {'pod': pod, 'far': far, 'biasf': biasf, 'ets': ets, 'ar': ar}
 
 def detect_anal(merge_data, models):
@@ -116,24 +133,28 @@ def detect_anal(merge_data, models):
                                                Linhas = (resultado do teste de detecção, e.g 'a','b','c','d'
                         }
     '''
-    detect_data = {}
+    stations = []
+    events = []
+    stats = []
+    results = []
+    models_result = []
     for station in merge_data.keys():
-        e = {}
         for event in merge_data[station].keys():
-            print(event)
-            print(merge_data[station][event])
             c = merge_data[station][event]
             radar = c.drop(['Data',], axis=1)
             station_ = merge_data[station][event]['Data']
-            a = {}
             for model in models:
                 tests = []
                 for value in radar.index:
                     tests.append(test(radar[model][value],station_[value]))
                 b = pd.Series(tests, index=radar.index, name=model)
                 b = b.groupby(lambda x: b[x]).count()
-                b = {key: b[key] for key in ['a','b','c','d']}
-                a[model] = occur_tests_values(**b)
-            e[event] = a
-        detect_data[station] = e
-    return detect_data
+                b = {key: b.get(key, 0) for key in ['a','b','c','d']}
+                dicti = occur_tests_values(**b)
+                for key, value in dicti.items():
+                    stations.append(station)
+                    events.append(event)
+                    stats.append(key)
+                    results.append(value)
+                    models_result.append(model)            
+    return pd.DataFrame({'station': stations, 'event': events, 'stats': stats, 'result': results, 'model': models_result})

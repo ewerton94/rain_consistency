@@ -14,7 +14,6 @@ def confidence_interval(data):
 
 def uncertainty_analysis(estimated, metric):
     samples = resample(estimated, 100)
-    print(samples[:8])
     result = []
     for sample in samples:
         result.append(METRICS[metric](sample))

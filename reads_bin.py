@@ -114,7 +114,6 @@ class BinExtractor(object):
                     #create_series(filename[:3], matrix, latinfo[1], latinfo[2], lon_info[1], lon_info[2], date)
                     #create_elevation(filename[:3], matrix, latinfo[0], latinfo[1], latinfo[2], lon_info[0], lon_info[1], lon_info[2], date)
         #print('criando no banco')
-        print('criado')
         return data_series, date_series, (latinfo, lon_info)
 
             #os.rename(os.path.join(base_dir, members_to_extract[0]), os.path.join(base_dir, "%i.%s"%(count, members_to_extract[0][:3])))
