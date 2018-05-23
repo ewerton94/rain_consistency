@@ -8,14 +8,13 @@ def acumulate(df_data):
 def metrics(events_data):
     metric_data = {}
     metric = {}
-    for station in events_data.keys():
-        metric = {}
+    for station in events_data:
+        print(station)
         inten = []
         acum = []
-        for event in events_data[station].keys():
+        for event in events_data[station]:
+            print(event)
             inten.append(intensify_max(events_data[station][event]))
-            acum.append(intensify_max(events_data[station][event]))
-
-        metric['MaxIntensify'] = pd.DataFrame(inten, index = inten[0].index)
-        metric['Acumulate'] = pd.DataFrame(acum, index = inten[0].index)
-        metric_data [station] = metric
+            acum.append(acumulate(events_data[station][event]))
+        metric_data [station] = {'acum': acum, 'max': inten}
+    return metric_data
