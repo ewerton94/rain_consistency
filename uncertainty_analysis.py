@@ -20,6 +20,6 @@ def corr_coef(observed, estimated):
     observed_mean = mean(observed)
     estimated_mean = mean(estimated)
     prod = sum([(comparation[0]-observed_mean)*(comparation[1]-estimated_mean) for comparation in zip(observed, estimated)])
-    dif1 = sqrt([(comparation[1]-estimated_mean)**2 for comparation in zip(observed, estimated)])
-    dif2 = sqrt([(comparation[0]-observed_mean)**2 for comparation in zip(observed, estimated)])
+    dif1 = sqrt(sum([(comparation[1]-estimated_mean)**2 for comparation in zip(observed, estimated)]))
+    dif2 = sqrt(sum([(comparation[0]-observed_mean)**2 for comparation in zip(observed, estimated)]))
     return prod/(dif1*dif2)
